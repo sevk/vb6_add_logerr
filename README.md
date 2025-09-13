@@ -20,7 +20,7 @@
 
 ## 安装与使用
 
-1. 将 `add_logerr.dll` 文件复制到 VB6 的插件目录中。
+1. 将 `add_logerr.dll` 文件复制到 VB6 的插件目录中, 或直接运行cmd , regsvr32 add_logerr.dll 
 2. 在 VB6 中加载插件。
 3. 使用插件提供的功能在代码中添加日志记录。
 
