@@ -6,14 +6,16 @@ Declare Function WritePrivateProfileString& Lib "Kernel32" Alias "WritePrivatePr
 Public Const ADDIN_NAME = "add_logerr"
 
 'To define the caption that appears in the Add-In Manager window go to the
-'Object Browser (F2), select clsConnect, right click, select "Properties ..."
+'Object Browser (Ctrl+R), select clsConnect, right click, select "Properties ..."
 'VB's "Member Options" dialog should appear.  In the "Description" text box
 'enter the caption you want to appear in the Add-Manager window.
 
 Public theConnection As clsConnect
  
 Public Sub InitializeAddIn()
-    'put any desired initialization code here
+  On Error Resume Next
+  AddToINI
+  'É¾³ý¾Í±à¼­ c:\windows\vbaddin.ini
 End Sub
 
 'This procedure must be executed before VB's Add-In Manager will
@@ -22,8 +24,9 @@ End Sub
 'to run it once in the immediate window to make the add-in available in
 'your local environment.
 Sub AddToINI()
-    Dim ErrCode As Long
-    ErrCode = WritePrivateProfileString("Add-Ins32", ADDIN_NAME & ".clsConnect", "0", "vbaddin.ini")
+  Dim ErrCode As Long
+  'Ð´Èë c:\windows\vbaddin.ini
+  ErrCode = WritePrivateProfileString("Add-Ins32", ADDIN_NAME & ".clsConnect", "0", "vbaddin.ini")
 End Sub
 
 Public Sub CreateError(ByVal sErrorDescription As String)

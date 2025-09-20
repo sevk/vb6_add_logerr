@@ -18,7 +18,7 @@ Public WithEvents MenuHandler   As CommandBarEvents         'command bar event h
 Attribute MenuHandler.VB_VarHelpID = -1
 
 Dim menuControlPanel As Office.CommandBarControl  'command bar object
-Const m_err_add = "* 自动添加错误处理"
+Const m_err_add = "e自动添加错误处理 (&E) "
 
 Private Sub Class_Initialize()
     Set mIDE = modAddIn.theConnection.theIDE
@@ -33,7 +33,7 @@ On Error GoTo LocalError
     ' 添加代码右键菜单项  m_err_add
     Set cbContextMenu = mIDE.CommandBars(15).Controls("定义(&D)")
     If Not cbContextMenu Is Nothing Then
-        contextMenuIndex = cbContextMenu.Index + 1
+        contextMenuIndex = cbContextMenu.Index + 3
         Dim contextMenuItem As Office.CommandBarControl
         Set contextMenuItem = mIDE.CommandBars(15).Controls.Add(, , , contextMenuIndex)
         contextMenuItem.Caption = m_err_add
@@ -107,12 +107,19 @@ Function 读取当前编辑的函数_name() As String
     mIDE.ActiveCodePane.GetSelection startLine, startCol, endLine, endCol
     currentLine = startLine
     
+    Dim i As Long
     procName = codeModule.ProcOfLine(currentLine, procKind)
+    For i = 0 To 9
+      If Left(procName, 1) = "'" Then
+        currentLine = currentLine + 1
+        procName = codeModule.ProcOfLine(currentLine, procKind)
+      Else
+        Exit For
+      End If
+    Next
 
     If procName <> "" Then
-        读取当前编辑的函数or_sub = procName
-    Else
-        读取当前编辑的函数or_sub = ""
+        读取当前编辑的函数_name = procName
     End If
 End Function
 
@@ -125,7 +132,7 @@ Function 读取当前编辑的代码() As String
   End If
 End Function
 
-Sub 在当前编辑的代码中插入错误处理()
+Sub 在当前编辑的代码中插入错误处理(name As String)
     On Error Resume Next
     Dim codeModule As codeModule
     Dim procName As String
@@ -134,7 +141,7 @@ Sub 在当前编辑的代码中插入错误处理()
     Dim actualStartLine As Long
     Dim procStartLine As Long, procBodyLineCount As Long
     Dim procContent As String
-    Dim exitStatement As String
+    Dim exitStatement As String, s As String
     
     ' 获取当前代码模块
     Set codeModule = mIDE.ActiveCodePane.codeModule
@@ -171,12 +178,16 @@ Sub 在当前编辑的代码中插入错误处理()
     codeModule.InsertLines actualStartLine + 1, vbTab & "On Error Goto EH"
     
     ' 在函数末尾插入错误处理尾
-    codeModule.InsertLines procStartLine + procBodyLineCount, vbTab & exitStatement & vbCrLf & "EH:" & vbCrLf & vbTab & "logerr err.Description"
+    s = vbCrLf & vbTab & exitStatement & vbCrLf & "EH:" & vbCrLf & vbTab & "logerr err.Description"
+    s = s & " & " & """ @ " & Left(name, 1) & "_" & Mid(name, 2) & """"
+    codeModule.InsertLines procStartLine + procBodyLineCount, s
 End Sub
 
 Sub 添加错误处理()
+  Static name As String
 '  s = 读取当前编辑的代码
 '  s = 读取当前编辑的函数or_sub
+  name = 读取当前编辑的函数_name
   s = 读取当前编辑的函数_内容
   'MsgBox "当前函数: " & s
   'MsgBox "内容: " & 读取当前编辑的函数_内容
@@ -184,7 +195,7 @@ Sub 添加错误处理()
     MsgBox "已存在: " & s, vbInformation
     Exit Sub
   End If
-  在当前编辑的代码中插入错误处理
+  在当前编辑的代码中插入错误处理 name
 End Sub
 
 

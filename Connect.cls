@@ -11,13 +11,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
-Attribute VB_Description = "Compile Controller"
+Attribute VB_Description = "add_logerr"
 Option Explicit
 
 Implements IDTExtensibility
 
 Const AddInDESCRIPTION = "add_logerr"
-Const ExtraInstanceDESCRIPTION = "Extra add_logerr"
+Const ExtraInstanceDESCRIPTION = "add_logerr"
 
 Private mtheIDE As vbide.VBE
 Private mtheMenuHandler As clsMenuHandler
